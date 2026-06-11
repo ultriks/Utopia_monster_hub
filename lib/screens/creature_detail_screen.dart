@@ -77,7 +77,7 @@ class CreatureDetailScreen extends StatelessWidget {
             ),
 
             // Stats row
-            Row(
+            /*Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                _statColumn("AGILITY", creature.speed+creature.dexterity, AppColors.bodyTraits),
@@ -85,7 +85,7 @@ class CreatureDetailScreen extends StatelessWidget {
                _statColumn("INTELLECT", creature.engineering+creature.memory, AppColors.mindTraits),
                
               ]
-            ), //TODO: Rewrite the code so it uses the same methods as kits
+            ), //TODO: Rewrite the code so it uses the same methods as kits */
 
             // Kits section
             if (kitDisplays.isNotEmpty) ...[

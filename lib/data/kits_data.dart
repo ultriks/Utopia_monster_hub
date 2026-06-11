@@ -5,15 +5,15 @@ const List<Kit> kitsData = [
     id: 'defensive',
     name: 'Defensive',
     drBonus: 2,
-    shpBonus: 5,
-    dhpBonus: 5,
-    physicalDefenseBonus: 4, // Any single defense +4
-    blockBonusDice: 1, // Either Block +1d4 or Dodge +1d12
+    bmsStatsBonus {shp: 5, dhp: 5}
+    defenseBonus {choice: 4}
+    ratingsBonus {choice: 1}
   ),
   Kit(
     id: 'impressive',
     name: 'Impressive',
     drBonus: 3,
+
     staminaBonus: 15, // SHP, DHP, or stamina +15
     appealBonus: 6, // Up to 6 subtraits increased by total of 6
   ),

@@ -124,7 +124,7 @@ class Creature {
     return list;
   }
 
-  int get computedDr {
+  /*int get computedDr {
     int dr = _baseBody.baseDr;
     for (var k in _activeKits) dr += k.drBonus;
     for (var c in _activeClasses) dr += c.drBonus;
@@ -297,7 +297,7 @@ class Creature {
     for (var c in _activeClasses) bonus += c.dodgeBonusDice;
     return _addDice(_baseBody.dodgeRating, bonus);
   }
-
+*/
   List<CreatureAction> get computedActions {
     final list = List<CreatureAction>.from(_baseBody.actions);
     for (var c in _activeClasses) list.addAll(c.actions);
