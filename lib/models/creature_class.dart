@@ -1,4 +1,5 @@
 import 'action.dart';
+import 'item.dart';
 
 enum CreatureClassCategory {
   martial,
@@ -20,7 +21,7 @@ class CreatureClass {
 
   final List<CreatureAction> actions;
   final List<String> passives;
-  final List<String> items;
+  final List<Item> items;
 
   const CreatureClass({
     required this.id,

@@ -19,6 +19,7 @@ Class Item {
     final String description;
     final Rarity rarity;
     final ItemType type;
+    final int cost;
     final Map<String, int> components;
 
     const Item({
@@ -27,7 +28,7 @@ Class Item {
         required this.type,
         required this.description,
 
+        this.cost = const 0,
         this.components = const {'material': 0, 'refinement': 0, 'power': 0 },
     });
-
 }
