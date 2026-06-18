@@ -79,7 +79,7 @@ enum DamageType{
 
 class Weapon extends Item {
     final int TA;
-    final (int amount, int dice_sides) damage;
+    final (int amount, int dice_sides, String? modifier) damage;
     final DamageType damageType;
     final record (int, int?) range;
     final int? staminaCost;
@@ -96,7 +96,7 @@ class Weapon extends Item {
         required super.slots_taken,
         required super.components,
         required this.TA,
-        this.damage = (0, 0),
+        this.damage = (0, 0, null),
         required this.damageType,
         this.range = (0, null),
         this.staminaCost,

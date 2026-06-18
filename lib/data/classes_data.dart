@@ -1,5 +1,6 @@
 import '../models/creature_class.dart';
 import '../models/action.dart';
+import 'items_data.dart' as items;
 
 final List<CreatureClass> classesData = [
   // Martial
@@ -21,6 +22,10 @@ final List<CreatureClass> classesData = [
         name: 'Attack',
         description: '1 Turn Action. 0 meters (Melee). 4d4 Physical damage.'
       )
+    ],
+    items: [
+      items.itemMap['dagger_01']!,
+      items.itemMap['garments_01']!,
     ]
   ),
   CreatureClass(
@@ -46,6 +51,11 @@ final List<CreatureClass> classesData = [
         name: 'Attack (Ranged)',
         description: '3 Turn Actions. 20/40 meters (Ranged). 5d8 + [Dexterity Mod] Physical'
       )
+    ],
+    items: [
+      items.itemMap['claymore_01']!,
+      items.itemMap['longbow_01']!,
+      items.itemMap['body_armor_01']!
     ]
   ),
   CreatureClass(
@@ -72,6 +82,12 @@ final List<CreatureClass> classesData = [
         name: 'Attack (Ranged)',
         description: '2 Turn Actions. 20/40 meters (Ranged). 4d8 Energy'
       )
+    ],
+    items: [
+      items.itemMap['force_arbalest_01']!,
+      items.itemMap[power_body]!,
+      items.itemMap['gauntlets_01']!,
+      items.itemMap[force_blade]!
     ]
   ),
   CreatureClass(
