@@ -76,16 +76,7 @@ class CreatureDetailScreen extends StatelessWidget {
               ],
             ),
 
-            // Stats row
-            /*Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-               _statColumn("AGILITY", creature.speed+creature.dexterity, AppColors.bodyTraits),
-               _statColumn("STRENGTH", creature.power+creature.fortitude, AppColors.bodyTraits),
-               _statColumn("INTELLECT", creature.engineering+creature.memory, AppColors.mindTraits),
-               
-              ]
-            ), //TODO: Rewrite the code so it uses the same methods as kits */
+            _buildTraitsSection(creature),
 
             // Kits section
             if (kitDisplays.isNotEmpty) ...[
@@ -210,6 +201,93 @@ class CreatureDetailScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTraitsSection(Creature creature) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        _sectionHeader('Traits & Subtraits'),
+        const SizedBox(height: 16),
+        _buildTraitGroup(
+          "AGILITY", creature.getSubtrait('speed') + creature.getSubtrait('dexterity'), AppColors.bodyTraits,
+          "Speed", creature.getSubtrait('speed'),
+          "Dexterity", creature.getSubtrait('dexterity'),
+        ),
+        _buildTraitGroup(
+          "STRENGTH", creature.getSubtrait('power') + creature.getSubtrait('fortitude'), AppColors.bodyTraits,
+          "Power", creature.getSubtrait('power'),
+          "Fortitude", creature.getSubtrait('fortitude'),
+        ),
+        _buildTraitGroup(
+          "INTELLECT", creature.getSubtrait('engineering') + creature.getSubtrait('memory'), AppColors.mindTraits,
+          "Engineering", creature.getSubtrait('engineering'),
+          "Memory", creature.getSubtrait('memory'),
+        ),
+        _buildTraitGroup(
+          "WILL", creature.getSubtrait('resolve') + creature.getSubtrait('awareness'), AppColors.mindTraits,
+          "Resolve", creature.getSubtrait('resolve'),
+          "Awareness", creature.getSubtrait('awareness'),
+        ),
+        _buildTraitGroup(
+          "DISPLAY", creature.getSubtrait('portrayal') + creature.getSubtrait('stunt'), AppColors.soulTraits,
+          "Portrayal", creature.getSubtrait('portrayal'),
+          "Stunt", creature.getSubtrait('stunt'),
+        ),
+        _buildTraitGroup(
+          "CHARM", creature.getSubtrait('appeal') + creature.getSubtrait('language'), AppColors.soulTraits,
+          "Appeal", creature.getSubtrait('appeal'),
+          "Language", creature.getSubtrait('language'),
+        ),
+      ],
+    );
+  }
+
+  String _formatModifier(int value) {
+    final mod = value - 4;
+    return mod >= 0 ? '+$mod' : '$mod';
+  }
+
+  Widget _buildTraitGroup(String traitName, int traitValue, Color color, String sub1Name, int sub1Value, String sub2Name, int sub2Value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.5)),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(traitName, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+                Text('$traitValue (${_formatModifier(traitValue)})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+              ],
+            ),
+            const Divider(color: AppColors.divider),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(sub1Name, style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+                Text('$sub1Value (${_formatModifier(sub1Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(sub2Name, style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+                Text('$sub2Value (${_formatModifier(sub2Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

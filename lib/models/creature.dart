@@ -124,156 +124,63 @@ class Creature {
     return list;
   }
 
-  /*int get computedDr {
+  int get computedDr {
     int dr = _baseBody.baseDr;
-    for (var k in _activeKits) dr += k.drBonus;
-    for (var c in _activeClasses) dr += c.drBonus;
+    for (var k in _activeKits) { dr += k.drBonus; }
+    for (var c in _activeClasses) { dr += c.drBonus; }
     return dr;
   }
 
-  int get computedShp {
-    int val = _baseBody.shp;
-    for (var k in _activeKits) val += k.shpBonus;
-    for (var c in _activeClasses) val += c.shpBonus;
+
+  int getBmsStat(String statName) {
+    int val = 0;
+    switch (statName) {
+      case 'shp': val = _baseBody.shp; break;
+      case 'dhp': val = _baseBody.dhp; break;
+      case 'stamina': val = _baseBody.stamina; break;
+    }
+    for (var k in _activeKits) { val += k.bmsStatsBonus[statName] ?? 0; }
+    for (var c in _activeClasses) { val += c.bmsStatsBonus[statName] ?? 0; }
     return val;
   }
 
-  int get computedDhp {
-    int val = _baseBody.dhp;
-    for (var k in _activeKits) val += k.dhpBonus;
-    for (var c in _activeClasses) val += c.dhpBonus;
+  int getDefense(String name) {
+    int val = 0;
+    switch (name) {
+      case 'physical': val = _baseBody.physicalDefense; break;
+      case 'energy': val = _baseBody.energyDefense; break;
+      case 'heat': val = _baseBody.heatDefense; break;
+      case 'chill': val = _baseBody.chillDefense; break;
+      case 'psyche': val = _baseBody.psycheDefense; break;
+    }
+    val += customStats['${name}Defense'] ?? 0;
+    for (var k in _activeKits) { val += k.defenseBonus[name] ?? 0; }
+    for (var c in _activeClasses) { val += c.defenseBonus[name] ?? 0; }
     return val;
   }
 
-  int get computedStamina {
-    int val = _baseBody.stamina;
-    for (var k in _activeKits) val += k.staminaBonus;
-    for (var c in _activeClasses) val += c.staminaBonus;
+  int getSubtrait(String name) {
+    int val = 0;
+    switch (name) {
+      case 'speed': val = _baseBody.speed; break;
+      case 'dexterity': val = _baseBody.dexterity; break;
+      case 'power': val = _baseBody.power; break;
+      case 'fortitude': val = _baseBody.fortitude; break;
+      case 'engineering': val = _baseBody.engineering; break;
+      case 'memory': val = _baseBody.memory; break;
+      case 'resolve': val = _baseBody.resolve; break;
+      case 'awareness': val = _baseBody.awareness; break;
+      case 'portrayal': val = _baseBody.portrayal; break;
+      case 'stunt': val = _baseBody.stunt; break;
+      case 'appeal': val = _baseBody.appeal; break;
+      case 'language': val = _baseBody.language; break;
+    }
+    val += customStats[name] ?? 0;
+    for (var k in _activeKits) { val += k.subtraitBonus[name] ?? 0; }
+    for (var c in _activeClasses) { val += c.subtraitBonus[name] ?? 0; }
     return val;
   }
 
-  // Defenses
-  int get computedPhysicalDefense {
-    int val = _baseBody.physicalDefense + (customStats['physicalDefense'] ?? 0);
-    for (var k in _activeKits) val += k.physicalDefenseBonus;
-    for (var c in _activeClasses) val += c.physicalDefenseBonus;
-    return val;
-  }
-
-  int get computedEnergyDefense {
-    int val = _baseBody.energyDefense + (customStats['energyDefense'] ?? 0);
-    for (var k in _activeKits) val += k.energyDefenseBonus;
-    for (var c in _activeClasses) val += c.energyDefenseBonus;
-    return val;
-  }
-
-  int get computedHeatDefense {
-    int val = _baseBody.heatDefense + (customStats['heatDefense'] ?? 0);
-    for (var k in _activeKits) val += k.heatDefenseBonus;
-    for (var c in _activeClasses) val += c.heatDefenseBonus;
-    return val;
-  }
-
-  int get computedChillDefense {
-    int val = _baseBody.chillDefense + (customStats['chillDefense'] ?? 0);
-    for (var k in _activeKits) val += k.chillDefenseBonus;
-    for (var c in _activeClasses) val += c.chillDefenseBonus;
-    return val;
-  }
-
-  int get computedPsycheDefense {
-    int val = _baseBody.psycheDefense + (customStats['psycheDefense'] ?? 0);
-    for (var k in _activeKits) val += k.psycheDefenseBonus;
-    for (var c in _activeClasses) val += c.psycheDefenseBonus;
-    return val;
-  }
-
-  // Subtraits
-  int get computedSpeed {
-    int val = _baseBody.speed + (customStats['speed'] ?? 0);
-    for (var k in _activeKits) val += k.speedBonus;
-    for (var c in _activeClasses) val += c.speedBonus;
-    return val;
-  }
-
-  int get computedDexterity {
-    int val = _baseBody.dexterity + (customStats['dexterity'] ?? 0);
-    for (var k in _activeKits) val += k.dexterityBonus;
-    for (var c in _activeClasses) val += c.dexterityBonus;
-    return val;
-  }
-
-  int get computedPower {
-    int val = _baseBody.power + (customStats['power'] ?? 0);
-    for (var k in _activeKits) val += k.powerBonus;
-    for (var c in _activeClasses) val += c.powerBonus;
-    return val;
-  }
-
-  int get computedFortitude {
-    int val = _baseBody.fortitude + (customStats['fortitude'] ?? 0);
-    for (var k in _activeKits) val += k.fortitudeBonus;
-    for (var c in _activeClasses) val += c.fortitudeBonus;
-    return val;
-  }
-
-  int get computedEngineering {
-    int val = _baseBody.engineering + (customStats['engineering'] ?? 0);
-    for (var k in _activeKits) val += k.engineeringBonus;
-    for (var c in _activeClasses) val += c.engineeringBonus;
-    return val;
-  }
-
-  int get computedMemory {
-    int val = _baseBody.memory + (customStats['memory'] ?? 0);
-    for (var k in _activeKits) val += k.memoryBonus;
-    for (var c in _activeClasses) val += c.memoryBonus;
-    return val;
-  }
-
-  int get computedResolve {
-    int val = _baseBody.resolve + (customStats['resolve'] ?? 0);
-    for (var k in _activeKits) val += k.resolveBonus;
-    for (var c in _activeClasses) val += c.resolveBonus;
-    return val;
-  }
-
-  int get computedAwareness {
-    int val = _baseBody.awareness + (customStats['awareness'] ?? 0);
-    for (var k in _activeKits) val += k.awarenessBonus;
-    for (var c in _activeClasses) val += c.awarenessBonus;
-    return val;
-  }
-
-  int get computedPortrayal {
-    int val = _baseBody.portrayal + (customStats['portrayal'] ?? 0);
-    for (var k in _activeKits) val += k.portrayalBonus;
-    for (var c in _activeClasses) val += c.portrayalBonus;
-    return val;
-  }
-
-  int get computedStunt {
-    int val = _baseBody.stunt + (customStats['stunt'] ?? 0);
-    for (var k in _activeKits) val += k.stuntBonus;
-    for (var c in _activeClasses) val += c.stuntBonus;
-    return val;
-  }
-
-  int get computedAppeal {
-    int val = _baseBody.appeal + (customStats['appeal'] ?? 0);
-    for (var k in _activeKits) val += k.appealBonus;
-    for (var c in _activeClasses) val += c.appealBonus;
-    return val;
-  }
-
-  int get computedLanguage {
-    int val = _baseBody.language + (customStats['language'] ?? 0);
-    for (var k in _activeKits) val += k.languageBonus;
-    for (var c in _activeClasses) val += c.languageBonus;
-    return val;
-  }
-
-  // Ratings
   String _addDice(String baseDice, int bonus) {
     if (bonus == 0) return baseDice;
     final parts = baseDice.split('d');
@@ -284,30 +191,28 @@ class Creature {
     return baseDice;
   }
 
-  String get computedBlockRating {
+  String getRating(String name) {
     int bonus = 0;
-    for (var k in _activeKits) bonus += k.blockBonusDice;
-    for (var c in _activeClasses) bonus += c.blockBonusDice;
-    return _addDice(_baseBody.blockRating, bonus);
+    for (var k in _activeKits) { bonus += k.ratingsBonus[name] ?? 0; }
+    for (var c in _activeClasses) { bonus += c.ratingsBonus[name] ?? 0; }
+    
+    String baseRating = '';
+    if (name == 'block') { baseRating = _baseBody.blockRating; }
+    else if (name == 'dodge') { baseRating = _baseBody.dodgeRating; }
+    
+    return _addDice(baseRating, bonus);
   }
 
-  String get computedDodgeRating {
-    int bonus = 0;
-    for (var k in _activeKits) bonus += k.dodgeBonusDice;
-    for (var c in _activeClasses) bonus += c.dodgeBonusDice;
-    return _addDice(_baseBody.dodgeRating, bonus);
-  }
-*/
   List<CreatureAction> get computedActions {
     final list = List<CreatureAction>.from(_baseBody.actions);
-    for (var c in _activeClasses) list.addAll(c.actions);
+    for (var c in _activeClasses) { list.addAll(c.actions); }
     list.addAll(actions);
     return list;
   }
 
   List<String> get computedPassives {
     final list = List<String>.from(_baseBody.passives);
-    for (var c in _activeClasses) list.addAll(c.passives);
+    for (var c in _activeClasses) { list.addAll(c.passives); }
     for (var k in kits) {
       final kitId = k['kitId'] as String?;
       final stacks = k['stacks'] as int? ?? 1;
@@ -326,8 +231,8 @@ class Creature {
 
   void recalculateBaseStats() {
     finalDr = computedDr;
-    shp = computedShp;
-    dhp = computedDhp;
-    stamina = computedStamina;
+    shp = getBmsStat('shp');
+    dhp = getBmsStat('dhp');
+    stamina = getBmsStat('stamina');
   }
 }

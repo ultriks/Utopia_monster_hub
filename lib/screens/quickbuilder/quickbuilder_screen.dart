@@ -65,11 +65,11 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
     _selectedKits.forEach((kitId, stacks) {
       final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
       if (kit != null) {
-        shp += kit.shpBonus * stacks;
+        shp += (kit.bmsStatsBonus['shp'] ?? 0) * stacks;
       }
     });
     for (var cls in _allSelectedClasses) {
-      shp += cls.shpBonus;
+      shp += cls.bmsStatsBonus['shp'] ?? 0;
     }
     return shp;
   }
@@ -79,11 +79,11 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
     _selectedKits.forEach((kitId, stacks) {
       final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
       if (kit != null) {
-        dhp += kit.dhpBonus * stacks;
+        dhp += (kit.bmsStatsBonus['dhp'] ?? 0) * stacks;
       }
     });
     for (var cls in _allSelectedClasses) {
-      dhp += cls.dhpBonus;
+      dhp += cls.bmsStatsBonus['dhp'] ?? 0;
     }
     return dhp;
   }
@@ -93,11 +93,11 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
     _selectedKits.forEach((kitId, stacks) {
       final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
       if (kit != null) {
-        stamina += kit.staminaBonus * stacks;
+        stamina += (kit.bmsStatsBonus['stamina'] ?? 0) * stacks;
       }
     });
     for (var cls in _allSelectedClasses) {
-      stamina += cls.staminaBonus;
+      stamina += cls.bmsStatsBonus['stamina'] ?? 0;
     }
     return stamina;
   }
@@ -220,7 +220,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
                 int count = _selectedKits[kit.id] ?? 0;
                 return ListTile(
                   title: Text(kit.name),
-                  subtitle: Text('+${kit.drBonus} DR, +${kit.shpBonus} SHP, +${kit.dhpBonus} DHP, +${kit.staminaBonus} STA'),
+                  subtitle: Text('+${kit.drBonus} DR, +${kit.bmsStatsBonus['shp'] ?? 0} SHP, +${kit.bmsStatsBonus['dhp'] ?? 0} DHP, +${kit.bmsStatsBonus['stamina'] ?? 0} STA'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

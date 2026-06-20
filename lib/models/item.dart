@@ -50,23 +50,14 @@ abstract class Item {
     }
 
     factory Item.fromMap(Map<String, dynamic> map) {
-        return Item(
-            id: map['id'],
-            name: map['name'],
-            description: map['description'] ?? '',
-            rarity: Rarity.values.firstWhere(
-                (e) => e.name == map['rarity'],
-                orElse: () => Rarity.crude,
-            ),
-            type: ItemType.values.firstWhere(
-                (e) => e.name == map['type'],
-                orElse: () => ItemType.artifact,
-            ),
-            cost: map['cost'] ?? 0,
-            slots_taken: map['slots_taken'] ?? 0,
-            components: Map<String, int>.from(map['components'] ?? {'material': 0, 'refinement': 0, 'power': 0}),
-        );
-    }
+    final typeStr = map['type'];
+    if (typeStr == 'weapon') return Weapon.fromMap(map);
+    if (typeStr == 'armour') return Armour.fromMap(map);
+    if (typeStr == 'shield') return Shield.fromMap(map);
+    if (typeStr == 'consumable') return Consumable.fromMap(map);
+    return Artifact.fromMap(map); // Default fallback
+}
+
 }
 
 enum DamageType{
@@ -81,7 +72,7 @@ class Weapon extends Item {
     final int TA;
     final (int amount, int dice_sides, String? modifier) damage;
     final DamageType damageType;
-    final record (int, int?) range;
+    final (int, int?) range;
     final int? staminaCost;
     final int? shpCost;
     
@@ -108,9 +99,9 @@ class Weapon extends Item {
         return {
             ...super.toMap(),
             'TA': TA,
-            'damage': damage,
+            'damage': {'amount': damage.$1, 'dice_sides': damage.$2, 'modifier': damage.$3},
             'damageType': damageType.name,
-            'range': range,
+            'range': {'min': range.$1, 'max': range.$2},
             'staminaCost': staminaCost,
             'shpCost': shpCost
         };
@@ -133,12 +124,16 @@ class Weapon extends Item {
             slots_taken: map['slots_taken'],
             components: Map<String, int>.from(map['components']),
             TA: map['TA'],
-            damage: record.fromMap(map['damage']),
+            damage: map['damage'] is Map 
+                ? (map['damage']['amount'] as int? ?? 0, map['damage']['dice_sides'] as int? ?? 0, map['damage']['modifier'] as String?) 
+                : (0, 0, null),
             damageType: DamageType.values.firstWhere(
                 (e) => e.name == map['damageType'],
                 orElse: () => DamageType.physical,
             ),
-            range: record.fromMap(map['range']),
+            range: map['range'] is Map 
+                ? (map['range']['min'] as int? ?? 0, map['range']['max'] as int?) 
+                : (0, null),
             staminaCost: map['staminaCost'],
             shpCost: map['shpCost']
         );
