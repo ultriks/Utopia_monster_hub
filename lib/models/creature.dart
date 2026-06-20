@@ -7,6 +7,8 @@ import 'tag.dart';
 import '../data/creature_bodies.dart';
 import '../data/kits_data.dart';
 import '../data/classes_data.dart';
+import '../data/items_data.dart';
+import '../models/item.dart';
 
 class Creature {
   final String id;
@@ -15,6 +17,7 @@ class Creature {
   CreatureBodyType bodyType;
   List<Map<String, dynamic>> kits; // { "kitId": string, "stacks": int }
   List<String> classes;
+  List<String> items;
   Map<String, int> customStats;
   List<CreatureAction> actions;
   List<String> passives;
@@ -37,6 +40,7 @@ class Creature {
     required this.bodyType,
     this.kits = const [],
     this.classes = const [],
+    this.items = const [],
     this.customStats = const {},
     this.actions = const [],
     this.passives = const [],
@@ -58,6 +62,7 @@ class Creature {
       'body_type': bodyType.name,
       'kits_json': jsonEncode(kits),
       'classes_json': jsonEncode(classes),
+      'items_json': jsonEncode(items),
       'custom_stats_json': jsonEncode(customStats),
       'actions_json': jsonEncode(actions.map((x) => x.toMap()).toList()),
       'passives_json': jsonEncode(passives),
@@ -79,6 +84,7 @@ class Creature {
       bodyType: CreatureBodyType.values.firstWhere((e) => e.name == map['body_type'], orElse: () => CreatureBodyType.humanoid),
       kits: List<Map<String, dynamic>>.from(jsonDecode(map['kits_json'] ?? '[]')),
       classes: List<String>.from(jsonDecode(map['classes_json'] ?? '[]')),
+      items: List<String>.from(jsonDecode(map['items_json'] ?? '[]')),
       customStats: Map<String, int>.from(jsonDecode(map['custom_stats_json'] ?? '{}')),
       actions: List<CreatureAction>.from(
         (jsonDecode(map['actions_json'] ?? '[]') as List).map((x) => CreatureAction.fromMap(x))
@@ -207,6 +213,19 @@ class Creature {
     final list = List<CreatureAction>.from(_baseBody.actions);
     for (var c in _activeClasses) { list.addAll(c.actions); }
     list.addAll(actions);
+    for (var itemId in items) {
+      final item = itemsData.where((i) => i.id == itemId).firstOrNull;
+      if (item is Weapon) {
+        String dmg = '${item.damage.$1}d${item.damage.$2}';
+        if (item.damage.$3 != null) dmg += ' + [${item.damage.$3}]';
+        String rng = '${item.range.$1}';
+        if (item.range.$2 != null) rng += '-${item.range.$2}';
+        list.add(CreatureAction(
+          name: item.name,
+          description: "Attack with ${item.name} (TA: ${item.TA}, Damage: $dmg ${item.damageType.name}). Range: $rng.",
+        ));
+      }
+    }
     return list;
   }
 

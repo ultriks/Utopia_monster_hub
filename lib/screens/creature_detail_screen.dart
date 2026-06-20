@@ -3,6 +3,7 @@ import '../models/creature.dart';
 import '../models/action.dart';
 import '../data/kits_data.dart';
 import '../data/classes_data.dart';
+import '../data/items_data.dart';
 import '../utils/constants.dart';
 
 class CreatureDetailScreen extends StatelessWidget {
@@ -52,9 +53,18 @@ class CreatureDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Body type
-            Text(
-              "Body Type: ${creature.bodyType.name.toUpperCase()}",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Body Type: ${creature.bodyType.name.toUpperCase()}",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
+                ),
+                Text(
+                  "XP: ${_calculateXP(creature)}",
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.heal),
+                ),
+              ],
             ),
             if (creature.description.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -113,19 +123,19 @@ class CreatureDetailScreen extends StatelessWidget {
             ],
 
             // Actions section
-            if (creature.actions.isNotEmpty) ...[
+            if (creature.computedActions.isNotEmpty) ...[
               const SizedBox(height: 24),
               _sectionHeader('Actions'),
               const SizedBox(height: 8),
-              ...creature.actions.map((action) => _actionTile(action)),
+              ...creature.computedActions.map((action) => _actionTile(action)),
             ],
 
             // Passives section
-            if (creature.passives.isNotEmpty) ...[
+            if (creature.computedPassives.isNotEmpty) ...[
               const SizedBox(height: 24),
               _sectionHeader('Passives & Features'),
               const SizedBox(height: 8),
-              ...creature.passives.map((passive) => Padding(
+              ...creature.computedPassives.map((passive) => Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,6 +256,18 @@ class CreatureDetailScreen extends StatelessWidget {
     );
   }
 
+  int _calculateXP(Creature creature) {
+    int xp = creature.finalDr * 100;
+    int itemsCost = 0;
+    for (var itemId in creature.items) {
+      final item = itemsData.where((i) => i.id == itemId).firstOrNull;
+      if (item != null) {
+        itemsCost += item.cost;
+      }
+    }
+    return xp - itemsCost;
+  }
+
   String _formatModifier(int value) {
     final mod = value - 4;
     return mod >= 0 ? '+$mod' : '$mod';
@@ -253,38 +275,50 @@ class CreatureDetailScreen extends StatelessWidget {
 
   Widget _buildTraitGroup(String traitName, int traitValue, Color color, String sub1Name, int sub1Value, String sub2Name, int sub2Value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: color.withValues(alpha: 0.5)),
         ),
-        child: Column(
+        child: Row(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(traitName, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
-                Text('$traitValue (${_formatModifier(traitValue)})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
-              ],
+            Expanded(
+              flex: 2,
+              child: Row(
+                children: [
+                  Text(traitName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+                  const SizedBox(width: 8),
+                  Text('$traitValue (${_formatModifier(traitValue)})', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+                ],
+              ),
             ),
-            const Divider(color: AppColors.divider),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(sub1Name, style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
-                Text('$sub1Value (${_formatModifier(sub1Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(sub2Name, style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
-                Text('$sub2Value (${_formatModifier(sub2Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
-              ],
+            Container(width: 1, height: 24, color: color.withValues(alpha: 0.3), margin: const EdgeInsets.symmetric(horizontal: 12)),
+            Expanded(
+              flex: 3,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: '$sub1Name: ', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                        TextSpan(text: '$sub1Value (${_formatModifier(sub1Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+                      ],
+                    ),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: '$sub2Name: ', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                        TextSpan(text: '$sub2Value (${_formatModifier(sub2Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
