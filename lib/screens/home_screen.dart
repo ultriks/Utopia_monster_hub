@@ -81,7 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               itemCount: creatures.length,
               itemBuilder: (context, index) {
-                return CreatureCard(creature: creatures[index]);
+                return CreatureCard(
+                  creature: creatures[index],
+                  onRefresh: _loadCreatures,
+                );
               },
             ),
       floatingActionButton: FloatingActionButton(

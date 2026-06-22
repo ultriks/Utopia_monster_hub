@@ -145,6 +145,7 @@ class Creature {
       case 'dhp': val = _baseBody.dhp; break;
       case 'stamina': val = _baseBody.stamina; break;
     }
+    val += customStats[statName] ?? 0;
     for (var k in _activeKits) { val += k.bmsStatsBonus[statName] ?? 0; }
     for (var c in _activeClasses) { val += c.bmsStatsBonus[statName] ?? 0; }
     return val;
@@ -199,6 +200,7 @@ class Creature {
 
   String getRating(String name) {
     int bonus = 0;
+    bonus += customStats['${name}Rating'] ?? 0;
     for (var k in _activeKits) { bonus += k.ratingsBonus[name] ?? 0; }
     for (var c in _activeClasses) { bonus += c.ratingsBonus[name] ?? 0; }
     

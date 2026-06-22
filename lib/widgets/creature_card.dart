@@ -5,8 +5,9 @@ import '../screens/creature_detail_screen.dart';
 
 class CreatureCard extends StatelessWidget {
   final Creature creature;
+  final VoidCallback onRefresh;
 
-  const CreatureCard({super.key, required this.creature});
+  const CreatureCard({super.key, required this.creature, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +15,14 @@ class CreatureCard extends StatelessWidget {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreatureDetailScreen(creature: creature)),
           );
+          if (result == true) {
+            onRefresh();
+          }
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(

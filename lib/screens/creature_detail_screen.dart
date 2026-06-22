@@ -1,15 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import '../models/creature.dart';
 import '../models/action.dart';
 import '../data/kits_data.dart';
 import '../data/classes_data.dart';
 import '../data/items_data.dart';
+import '../data/database_helper.dart';
 import '../utils/constants.dart';
+import 'creature_edit_screen.dart';
 
 class CreatureDetailScreen extends StatelessWidget {
   final Creature creature;
 
   const CreatureDetailScreen({super.key, required this.creature});
+
+  void _copyCreature(BuildContext context) async {
+    final newCreature = Creature(
+      id: const Uuid().v4(),
+      name: '${creature.name} (Copy)',
+      description: creature.description,
+      bodyType: creature.bodyType,
+      kits: List.from(creature.kits),
+      classes: List.from(creature.classes),
+      items: List.from(creature.items),
+      customStats: Map.from(creature.customStats),
+      actions: List.from(creature.actions),
+      passives: List.from(creature.passives),
+      finalDr: creature.finalDr,
+      shp: creature.shp,
+      dhp: creature.dhp,
+      stamina: creature.stamina,
+      createdAt: DateTime.now().toIso8601String(),
+      updatedAt: DateTime.now().toIso8601String(),
+      tags: List.from(creature.tags),
+    );
+
+    try {
+      await DatabaseHelper.instance.createCreature(newCreature);
+      if (context.mounted) {
+        Navigator.pop(context, true); // Pop with true to indicate a refresh is needed
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error copying creature: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +76,20 @@ class CreatureDetailScreen extends StatelessWidget {
         title: Text(creature.name),
         actions: [
           IconButton(
+            icon: const Icon(Icons.copy),
+            tooltip: 'Copy Creature',
+            onPressed: () => _copyCreature(context),
+          ),
+          IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Редагування не буде, пішов ти нахуй')),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreatureEditScreen(creature: creature)),
               );
+              if (result == true && context.mounted) {
+                Navigator.pop(context, true); // Pop back to trigger refresh
+              }
             },
           ),
         ],
@@ -86,6 +133,7 @@ class CreatureDetailScreen extends StatelessWidget {
               ],
             ),
 
+            _buildDefensesSection(creature),
             _buildTraitsSection(creature),
 
             // Kits section
@@ -212,6 +260,53 @@ class CreatureDetailScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDefensesSection(Creature creature) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        _sectionHeader('Defenses'),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _defenseColumn("Physical", creature.getDefense('physical')),
+            _defenseColumn("Energy", creature.getDefense('energy')),
+            _defenseColumn("Heat", creature.getDefense('heat')),
+            _defenseColumn("Chill", creature.getDefense('chill')),
+            _defenseColumn("Psyche", creature.getDefense('psyche')),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _ratingColumn("Block", creature.getRating('block')),
+            _ratingColumn("Dodge", creature.getRating('dodge')),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _defenseColumn(String label, int value) {
+    return Column(
+      children: [
+        Text(value.toString(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.onSurface)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      ],
+    );
+  }
+
+  Widget _ratingColumn(String label, String value) {
+    return Column(
+      children: [
+        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.onSurface)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      ],
     );
   }
 

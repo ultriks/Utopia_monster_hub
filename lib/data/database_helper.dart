@@ -28,8 +28,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
@@ -42,6 +43,7 @@ CREATE TABLE creatures (
   body_type TEXT NOT NULL,
   kits_json TEXT,
   classes_json TEXT,
+  items_json TEXT,
   custom_stats_json TEXT,
   actions_json TEXT,
   passives_json TEXT,
@@ -68,6 +70,15 @@ CREATE TABLE creature_tags (
   PRIMARY KEY (creature_id, tag_id)
 );
 ''');
+  }
+
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Add the items_json column introduced in version 2
+      await db.execute(
+        'ALTER TABLE creatures ADD COLUMN items_json TEXT;',
+      );
+    }
   }
 
   // ---------- Creature CRUD ----------

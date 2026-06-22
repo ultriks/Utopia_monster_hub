@@ -35,6 +35,13 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
   String _creatureName = 'New Monster';
   String _creatureDescription = '';
 
+  // Distribute stats state
+  final Map<String, int> _distributedBms = {'shp': 0, 'dhp': 0, 'stamina': 0};
+  final Map<String, int> _distributedDefenses = {'physical': 0, 'energy': 0, 'heat': 0, 'chill': 0, 'psyche': 0};
+  final Map<String, int> _distributedSubtraits = {'speed': 0, 'dexterity': 0, 'power': 0, 'fortitude': 0, 'engineering': 0, 'memory': 0, 'resolve': 0, 'awareness': 0, 'portrayal': 0, 'stunt': 0, 'appeal': 0, 'language': 0};
+  final Map<String, int> _distributedRatings = {'block': 0, 'dodge': 0};
+  final Map<String, int> _distributedTravel = {'land': 0, 'water': 0, 'air': 0};
+
   // ---------- Computed Stats ----------
 
   List<CreatureClass> get _allSelectedClasses {
@@ -44,6 +51,69 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
       _selectedSupport,
       ..._selectedInnate,
     ].whereType<CreatureClass>().toList();
+  }
+
+  int get _bmsChoiceTotal {
+    int choice = 0;
+    _selectedKits.forEach((kitId, stacks) {
+      final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
+      if (kit != null) choice += (kit.bmsStatsBonus['choice'] ?? 0) * stacks;
+    });
+    for (var cls in _allSelectedClasses) choice += cls.bmsStatsBonus['choice'] ?? 0;
+    return choice;
+  }
+  int get _bmsChoiceUsed => _distributedBms.values.fold(0, (sum, val) => sum + val);
+
+  int get _defensesChoiceTotal {
+    int choice = 0;
+    _selectedKits.forEach((kitId, stacks) {
+      final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
+      if (kit != null) choice += (kit.defenseBonus['choice'] ?? 0) * stacks;
+    });
+    for (var cls in _allSelectedClasses) choice += cls.defenseBonus['choice'] ?? 0;
+    return choice;
+  }
+  int get _defensesChoiceUsed => _distributedDefenses.values.fold(0, (sum, val) => sum + val);
+
+  int get _subtraitsChoiceTotal {
+    int choice = 0;
+    _selectedKits.forEach((kitId, stacks) {
+      final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
+      if (kit != null) choice += (kit.subtraitBonus['choice'] ?? 0) * stacks;
+    });
+    for (var cls in _allSelectedClasses) choice += cls.subtraitBonus['choice'] ?? 0;
+    return choice;
+  }
+  int get _subtraitsChoiceUsed => _distributedSubtraits.values.fold(0, (sum, val) => sum + val);
+
+  int get _ratingsChoiceTotal {
+    int choice = 0;
+    _selectedKits.forEach((kitId, stacks) {
+      final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
+      if (kit != null) choice += (kit.ratingsBonus['choice'] ?? 0) * stacks;
+    });
+    for (var cls in _allSelectedClasses) choice += cls.ratingsBonus['choice'] ?? 0;
+    return choice;
+  }
+  int get _ratingsChoiceUsed => _distributedRatings.values.fold(0, (sum, val) => sum + val);
+
+  int get _travelChoiceTotal {
+    int choice = 0;
+    _selectedKits.forEach((kitId, stacks) {
+      final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
+      if (kit != null) choice += (kit.travelBonus['choice'] ?? 0) * stacks;
+    });
+    for (var cls in _allSelectedClasses) choice += cls.travelBonus['choice'] ?? 0;
+    return choice;
+  }
+  int get _travelChoiceUsed => _distributedTravel.values.fold(0, (sum, val) => sum + val);
+
+  bool get _allChoicesDistributed {
+    return _bmsChoiceUsed == _bmsChoiceTotal &&
+           _defensesChoiceUsed == _defensesChoiceTotal &&
+           _subtraitsChoiceUsed == _subtraitsChoiceTotal &&
+           _ratingsChoiceUsed == _ratingsChoiceTotal &&
+           _travelChoiceUsed == _travelChoiceTotal;
   }
 
   int get finalDr {
@@ -71,7 +141,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
     for (var cls in _allSelectedClasses) {
       shp += cls.bmsStatsBonus['shp'] ?? 0;
     }
-    return shp;
+    return shp + (_distributedBms['shp'] ?? 0);
   }
 
   int get finalDhp {
@@ -85,7 +155,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
     for (var cls in _allSelectedClasses) {
       dhp += cls.bmsStatsBonus['dhp'] ?? 0;
     }
-    return dhp;
+    return dhp + (_distributedBms['dhp'] ?? 0);
   }
 
   int get finalStamina {
@@ -99,7 +169,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
     for (var cls in _allSelectedClasses) {
       stamina += cls.bmsStatsBonus['stamina'] ?? 0;
     }
-    return stamina;
+    return stamina + (_distributedBms['stamina'] ?? 0);
   }
 
   List<CreatureAction> get _allActions {
@@ -137,6 +207,13 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
 
     List<String> classesToSave = _allSelectedClasses.map((c) => c.id).toList();
 
+    final customStats = <String, int>{};
+    _distributedBms.forEach((key, val) { if(val > 0) customStats[key] = val; });
+    _distributedDefenses.forEach((key, val) { if(val > 0) customStats['${key}Defense'] = val; });
+    _distributedSubtraits.forEach((key, val) { if(val > 0) customStats[key] = val; });
+    _distributedRatings.forEach((key, val) { if(val > 0) customStats['${key}Rating'] = val; });
+    _distributedTravel.forEach((key, val) { if(val > 0) customStats['${key}Travel'] = val; });
+
     final newCreature = Creature(
       id: const Uuid().v4(),
       name: _creatureName,
@@ -148,6 +225,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
       finalDr: finalDr,
       kits: kitsToSave,
       classes: classesToSave,
+      customStats: customStats,
       actions: _allActions,
       passives: _allPassives,
       createdAt: DateTime.now().toIso8601String(),
@@ -178,7 +256,11 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a body type')));
             return;
           }
-          if (_currentStep < 4) {
+          if (_currentStep == 3 && !_allChoicesDistributed) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please distribute all available points first')));
+            return;
+          }
+          if (_currentStep < 5) {
             setState(() => _currentStep += 1);
           } else {
             _saveCreature();
@@ -326,7 +408,15 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
             state: _currentStep > 2 ? StepState.complete : StepState.indexed,
           ),
 
-          // Step 4: Customize
+          // Step 4: Distribute Stats
+          Step(
+            title: const Text('Distribute Stats'),
+            content: _buildDistributeStatsStep(),
+            isActive: _currentStep >= 3,
+            state: _currentStep > 3 ? StepState.complete : StepState.indexed,
+          ),
+
+          // Step 5: Customize
           Step(
             title: const Text('Customize Identity'),
             content: Column(
@@ -342,18 +432,94 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
                 ),
               ],
             ),
-            isActive: _currentStep >= 3,
-            state: _currentStep > 3 ? StepState.complete : StepState.indexed,
+            isActive: _currentStep >= 4,
+            state: _currentStep > 4 ? StepState.complete : StepState.indexed,
           ),
 
-          // Step 5: Review
+          // Step 6: Review
           Step(
             title: const Text('Review & Save'),
             content: _buildReviewStep(),
-            isActive: _currentStep >= 4,
+            isActive: _currentStep >= 5,
           ),
         ],
       ),
+    );
+  }
+
+  // ---------- Distribute Stats Widget ----------
+
+  Widget _buildDistributeStatsStep() {
+    if (_bmsChoiceTotal == 0 && _defensesChoiceTotal == 0 && 
+        _subtraitsChoiceTotal == 0 && _ratingsChoiceTotal == 0 && 
+        _travelChoiceTotal == 0) {
+      return const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('No stats to distribute from chosen kits/classes.'),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_bmsChoiceTotal > 0) _buildStatDistributor('BMS Stats', _distributedBms, _bmsChoiceUsed, _bmsChoiceTotal),
+        if (_defensesChoiceTotal > 0) _buildStatDistributor('Defenses', _distributedDefenses, _defensesChoiceUsed, _defensesChoiceTotal),
+        if (_subtraitsChoiceTotal > 0) _buildStatDistributor('Subtraits', _distributedSubtraits, _subtraitsChoiceUsed, _subtraitsChoiceTotal),
+        if (_ratingsChoiceTotal > 0) _buildStatDistributor('Ratings', _distributedRatings, _ratingsChoiceUsed, _ratingsChoiceTotal),
+        if (_travelChoiceTotal > 0) _buildStatDistributor('Travel', _distributedTravel, _travelChoiceUsed, _travelChoiceTotal),
+      ],
+    );
+  }
+
+  Widget _buildStatDistributor(String title, Map<String, int> map, int used, int total) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Text('$title ($used/$total distributed)', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        ),
+        ...map.keys.map((key) {
+          int count = map[key] ?? 0;
+          // remaining budget excluding this stat's current allocation
+          int remaining = total - used + count;
+          final controller = TextEditingController(text: '$count');
+          // keep cursor at end
+          controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: controller.text.length),
+          );
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child: Text(key.toUpperCase())),
+                SizedBox(
+                  width: 72,
+                  child: TextFormField(
+                    controller: controller,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                      border: const OutlineInputBorder(),
+                      errorText: count > remaining ? 'Over budget' : null,
+                    ),
+                    onChanged: (val) {
+                      final parsed = int.tryParse(val);
+                      if (parsed == null) return;
+                      final clamped = parsed.clamp(0, remaining);
+                      setState(() => map[key] = clamped);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+        const Divider(),
+      ],
     );
   }
 
