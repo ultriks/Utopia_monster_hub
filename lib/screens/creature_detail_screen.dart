@@ -320,10 +320,13 @@ class CreatureDetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _defenseColumn(Icons.shield, creature.getDefense('physical')),
-            _defenseColumn(Icons.shield, creature.getDefense('energy')),
-            _defenseColumn(Icons.shield, creature.getDefense('heat')),
-            _defenseColumn(Icons.shield, creature.getDefense('chill')),
-            _defenseColumn(Icons.shield, creature.getDefense('psyche')),
+            _defenseColumn(Icons.electric_bolt, creature.getDefense('energy')),
+            _defenseColumn(
+              Icons.local_fire_department,
+              creature.getDefense('heat'),
+            ),
+            _defenseColumn(Icons.ac_unit, creature.getDefense('chill')),
+            _defenseColumn(Icons.psychology, creature.getDefense('psyche')),
           ],
         ),
         const SizedBox(height: 16),

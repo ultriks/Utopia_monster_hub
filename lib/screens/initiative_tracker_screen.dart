@@ -10,8 +10,12 @@ class InitiativeTrackerScreen extends StatefulWidget {
 }
 
 class _InitiativeTrackerScreenState extends State<InitiativeTrackerScreen> {
-  List<InitiativeEntry> entries = [];
-  int currentTurnIndex = 0;
+  static final List<InitiativeEntry> _persistedEntries = [];
+  static int _persistedCurrentTurnIndex = 0;
+
+  List<InitiativeEntry> get entries => _persistedEntries;
+  int get currentTurnIndex => _persistedCurrentTurnIndex;
+  set currentTurnIndex(int value) => _persistedCurrentTurnIndex = value;
 
   void _nextTurn() {
     setState(() {
