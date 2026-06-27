@@ -38,13 +38,16 @@ class CreatureDetailScreen extends StatelessWidget {
     try {
       await DatabaseHelper.instance.createCreature(newCreature);
       if (context.mounted) {
-        Navigator.pop(context, true); // Pop with true to indicate a refresh is needed
+        Navigator.pop(
+          context,
+          true,
+        ); // Pop with true to indicate a refresh is needed
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error copying creature: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error copying creature: $e')));
       }
     }
   }
@@ -58,10 +61,7 @@ class CreatureDetailScreen extends StatelessWidget {
       final stacks = kitEntry['stacks'] as int? ?? 1;
       if (kitId != null) {
         final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
-        kitDisplays.add(_KitDisplay(
-          name: kit?.name ?? kitId,
-          stacks: stacks,
-        ));
+        kitDisplays.add(_KitDisplay(name: kit?.name ?? kitId, stacks: stacks));
       }
     }
 
@@ -85,7 +85,9 @@ class CreatureDetailScreen extends StatelessWidget {
             onPressed: () async {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CreatureEditScreen(creature: creature)),
+                MaterialPageRoute(
+                  builder: (context) => CreatureEditScreen(creature: creature),
+                ),
               );
               if (result == true && context.mounted) {
                 Navigator.pop(context, true); // Pop back to trigger refresh
@@ -105,17 +107,28 @@ class CreatureDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   "Body Type: ${creature.bodyType.name.toUpperCase()}",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
                 ),
                 Text(
                   "XP: ${_calculateXP(creature)}",
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.heal),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.heal,
+                  ),
                 ),
               ],
             ),
             if (creature.description.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(creature.description, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+              Text(
+                creature.description,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
             ],
 
             const SizedBox(height: 16),
@@ -146,7 +159,9 @@ class CreatureDetailScreen extends StatelessWidget {
                 runSpacing: 8,
                 children: kitDisplays.map((kd) {
                   return Chip(
-                    label: Text(kd.stacks > 1 ? '${kd.name} ×${kd.stacks}' : kd.name),
+                    label: Text(
+                      kd.stacks > 1 ? '${kd.name} ×${kd.stacks}' : kd.name,
+                    ),
                     backgroundColor: AppColors.surface,
                   );
                 }).toList(),
@@ -183,16 +198,29 @@ class CreatureDetailScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _sectionHeader('Passives & Features'),
               const SizedBox(height: 8),
-              ...creature.computedPassives.map((passive) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• ', style: TextStyle(color: AppColors.primary, fontSize: 16)),
-                    Expanded(child: Text(passive, style: const TextStyle(fontSize: 14))),
-                  ],
+              ...creature.computedPassives.map(
+                (passive) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '• ',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          passive,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              )),
+              ),
             ],
 
             // Tags section
@@ -206,7 +234,9 @@ class CreatureDetailScreen extends StatelessWidget {
                 children: creature.tags.map((tag) {
                   return Chip(
                     label: Text(tag.name),
-                    backgroundColor: tag.color != null ? Color(tag.color!) : AppColors.surface,
+                    backgroundColor: tag.color != null
+                        ? Color(tag.color!)
+                        : AppColors.surface,
                   );
                 }).toList(),
               ),
@@ -234,7 +264,14 @@ class CreatureDetailScreen extends StatelessWidget {
   Widget _statColumn(String label, int value, Color color) {
     return Column(
       children: [
-        Text(value.toString(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+        Text(
+          value.toString(),
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
@@ -252,9 +289,18 @@ class CreatureDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(action.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  action.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(action.description, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                Text(
+                  action.description,
+                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -273,11 +319,11 @@ class CreatureDetailScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _defenseColumn("Physical", creature.getDefense('physical')),
-            _defenseColumn("Energy", creature.getDefense('energy')),
-            _defenseColumn("Heat", creature.getDefense('heat')),
-            _defenseColumn("Chill", creature.getDefense('chill')),
-            _defenseColumn("Psyche", creature.getDefense('psyche')),
+            _defenseColumn(Icons.shield, creature.getDefense('physical')),
+            _defenseColumn(Icons.shield, creature.getDefense('energy')),
+            _defenseColumn(Icons.shield, creature.getDefense('heat')),
+            _defenseColumn(Icons.shield, creature.getDefense('chill')),
+            _defenseColumn(Icons.shield, creature.getDefense('psyche')),
           ],
         ),
         const SizedBox(height: 16),
@@ -292,11 +338,18 @@ class CreatureDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _defenseColumn(String label, int value) {
+  Widget _defenseColumn(IconData icon, int value) {
     return Column(
       children: [
-        Text(value.toString(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.onSurface)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Text(
+          value.toString(),
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.onSurface,
+          ),
+        ),
+        Icon(icon, size: 20, color: AppColors.onSurface),
       ],
     );
   }
@@ -304,7 +357,14 @@ class CreatureDetailScreen extends StatelessWidget {
   Widget _ratingColumn(String label, String value) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.onSurface)),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.onSurface,
+          ),
+        ),
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
@@ -318,34 +378,58 @@ class CreatureDetailScreen extends StatelessWidget {
         _sectionHeader('Traits & Subtraits'),
         const SizedBox(height: 16),
         _buildTraitGroup(
-          "AGILITY", creature.getSubtrait('speed') + creature.getSubtrait('dexterity'), AppColors.bodyTraits,
-          "Speed", creature.getSubtrait('speed'),
-          "Dexterity", creature.getSubtrait('dexterity'),
+          "AGILITY",
+          creature.getSubtrait('speed') + creature.getSubtrait('dexterity'),
+          AppColors.bodyTraits,
+          "Speed",
+          creature.getSubtrait('speed'),
+          "Dexterity",
+          creature.getSubtrait('dexterity'),
         ),
         _buildTraitGroup(
-          "STRENGTH", creature.getSubtrait('power') + creature.getSubtrait('fortitude'), AppColors.bodyTraits,
-          "Power", creature.getSubtrait('power'),
-          "Fortitude", creature.getSubtrait('fortitude'),
+          "STRENGTH",
+          creature.getSubtrait('power') + creature.getSubtrait('fortitude'),
+          AppColors.bodyTraits,
+          "Power",
+          creature.getSubtrait('power'),
+          "Fortitude",
+          creature.getSubtrait('fortitude'),
         ),
         _buildTraitGroup(
-          "INTELLECT", creature.getSubtrait('engineering') + creature.getSubtrait('memory'), AppColors.mindTraits,
-          "Engineering", creature.getSubtrait('engineering'),
-          "Memory", creature.getSubtrait('memory'),
+          "INTELLECT",
+          creature.getSubtrait('engineering') + creature.getSubtrait('memory'),
+          AppColors.mindTraits,
+          "Engineering",
+          creature.getSubtrait('engineering'),
+          "Memory",
+          creature.getSubtrait('memory'),
         ),
         _buildTraitGroup(
-          "WILL", creature.getSubtrait('resolve') + creature.getSubtrait('awareness'), AppColors.mindTraits,
-          "Resolve", creature.getSubtrait('resolve'),
-          "Awareness", creature.getSubtrait('awareness'),
+          "WILL",
+          creature.getSubtrait('resolve') + creature.getSubtrait('awareness'),
+          AppColors.mindTraits,
+          "Resolve",
+          creature.getSubtrait('resolve'),
+          "Awareness",
+          creature.getSubtrait('awareness'),
         ),
         _buildTraitGroup(
-          "DISPLAY", creature.getSubtrait('portrayal') + creature.getSubtrait('stunt'), AppColors.soulTraits,
-          "Portrayal", creature.getSubtrait('portrayal'),
-          "Stunt", creature.getSubtrait('stunt'),
+          "DISPLAY",
+          creature.getSubtrait('portrayal') + creature.getSubtrait('stunt'),
+          AppColors.soulTraits,
+          "Portrayal",
+          creature.getSubtrait('portrayal'),
+          "Stunt",
+          creature.getSubtrait('stunt'),
         ),
         _buildTraitGroup(
-          "CHARM", creature.getSubtrait('appeal') + creature.getSubtrait('language'), AppColors.soulTraits,
-          "Appeal", creature.getSubtrait('appeal'),
-          "Language", creature.getSubtrait('language'),
+          "CHARM",
+          creature.getSubtrait('appeal') + creature.getSubtrait('language'),
+          AppColors.soulTraits,
+          "Appeal",
+          creature.getSubtrait('appeal'),
+          "Language",
+          creature.getSubtrait('language'),
         ),
       ],
     );
@@ -368,7 +452,15 @@ class CreatureDetailScreen extends StatelessWidget {
     return mod >= 0 ? '+$mod' : '$mod';
   }
 
-  Widget _buildTraitGroup(String traitName, int traitValue, Color color, String sub1Name, int sub1Value, String sub2Name, int sub2Value) {
+  Widget _buildTraitGroup(
+    String traitName,
+    int traitValue,
+    Color color,
+    String sub1Name,
+    int sub1Value,
+    String sub2Name,
+    int sub2Value,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Container(
@@ -384,13 +476,32 @@ class CreatureDetailScreen extends StatelessWidget {
               flex: 2,
               child: Row(
                 children: [
-                  Text(traitName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+                  Text(
+                    traitName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
                   const SizedBox(width: 8),
-                  Text('$traitValue (${_formatModifier(traitValue)})', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+                  Text(
+                    '$traitValue (${_formatModifier(traitValue)})',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Container(width: 1, height: 24, color: color.withValues(alpha: 0.3), margin: const EdgeInsets.symmetric(horizontal: 12)),
+            Container(
+              width: 1,
+              height: 24,
+              color: color.withValues(alpha: 0.3),
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+            ),
             Expanded(
               flex: 3,
               child: Row(
@@ -399,16 +510,40 @@ class CreatureDetailScreen extends StatelessWidget {
                   RichText(
                     text: TextSpan(
                       children: [
-                        TextSpan(text: '$sub1Name: ', style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                        TextSpan(text: '$sub1Value (${_formatModifier(sub1Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+                        TextSpan(
+                          text: '$sub1Name: ',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '$sub1Value (${_formatModifier(sub1Value)})',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.onSurface,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   RichText(
                     text: TextSpan(
                       children: [
-                        TextSpan(text: '$sub2Name: ', style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                        TextSpan(text: '$sub2Value (${_formatModifier(sub2Value)})', style: const TextStyle(fontSize: 14, color: AppColors.onSurface)),
+                        TextSpan(
+                          text: '$sub2Name: ',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '$sub2Value (${_formatModifier(sub2Value)})',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.onSurface,
+                          ),
+                        ),
                       ],
                     ),
                   ),
