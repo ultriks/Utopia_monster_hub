@@ -94,6 +94,16 @@ class CreatureDetailScreen extends StatelessWidget {
               }
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            tooltip: 'Delete thy creature',
+            onPressed: () async {
+              await DatabaseHelper.instance.deleteCreature(creature.id!);
+              if (context.mounted) {
+                Navigator.pop(context, true); // Pop back to trigger refresh
+              }
+            },
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -147,6 +157,7 @@ class CreatureDetailScreen extends StatelessWidget {
             ),
 
             _buildDefensesSection(creature),
+            _buildTravelSection(creature),
             _buildTraitsSection(creature),
 
             // Kits section
@@ -434,6 +445,41 @@ class CreatureDetailScreen extends StatelessWidget {
           "Language",
           creature.getSubtrait('language'),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTravelSection(Creature creature) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        _sectionHeader('Travel'),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _travelColumn(Icons.landscape, creature.getTravel('land')),
+            _travelColumn(Icons.tsunami, creature.getTravel('water')),
+            _travelColumn(Icons.cloud, creature.getTravel('air')),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _travelColumn(IconData icon, int value) {
+    return Column(
+      children: [
+        Text(
+          value.toString(),
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.onSurface,
+          ),
+        ),
+        Icon(icon, size: 20, color: AppColors.onSurface),
       ],
     );
   }
