@@ -94,6 +94,16 @@ class CreatureDetailScreen extends StatelessWidget {
               }
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            tooltip: 'Delete thy creature',
+            onPressed: () async {
+              await DatabaseHelper.instance.deleteCreature(creature.id!);
+              if (context.mounted) {
+                Navigator.pop(context, true); // Pop back to trigger refresh
+              }
+            },
+          ),
         ],
       ),
       body: SingleChildScrollView(
