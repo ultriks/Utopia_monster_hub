@@ -131,7 +131,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
   }
 
   int get finalShp {
-    int shp = _selectedBody?.shp ?? 0;
+    int shp = _selectedBody?.bmsStats?['shp'] ?? 0;
     _selectedKits.forEach((kitId, stacks) {
       final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
       if (kit != null) {
@@ -145,7 +145,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
   }
 
   int get finalDhp {
-    int dhp = _selectedBody?.dhp ?? 0;
+    int dhp = _selectedBody?.bmsStats?['dhp'] ?? 0;
     _selectedKits.forEach((kitId, stacks) {
       final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
       if (kit != null) {
@@ -159,7 +159,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
   }
 
   int get finalStamina {
-    int stamina = _selectedBody?.stamina ?? 0;
+    int stamina = _selectedBody?.bmsStats?['stamina'] ?? 0;
     _selectedKits.forEach((kitId, stacks) {
       final kit = kitsData.where((k) => k.id == kitId).firstOrNull;
       if (kit != null) {
@@ -281,7 +281,7 @@ class _QuickbuilderScreenState extends State<QuickbuilderScreen> {
               children: creatureBodies.map((body) {
                 return RadioListTile<CreatureBody>(
                   title: Text(body.name),
-                  subtitle: Text('DR: ${body.baseDr} | SHP: ${body.shp} | DHP: ${body.dhp} | STA: ${body.stamina}'),
+                  subtitle: Text('DR: ${body.baseDr} | SHP: ${body.bmsStats['shp']} | DHP: ${body.bmsStats['dhp']} | STA: ${body.bmsStats['stamina']}'),
                   value: body,
                   // ignore: deprecated_member_use
                   groupValue: _selectedBody,

@@ -622,7 +622,7 @@ class CreatureDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _componentsColumn() {}
+  //Widget _componentsColumn() {}
 }
 
 class _KitDisplay {
