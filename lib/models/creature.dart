@@ -154,18 +154,7 @@ class Creature {
   }
 
   int getBmsStat(String statName) {
-    int val = 0;
-    switch (statName) {
-      case 'shp':
-        val = _baseBody.shp;
-        break;
-      case 'dhp':
-        val = _baseBody.dhp;
-        break;
-      case 'stamina':
-        val = _baseBody.stamina;
-        break;
-    }
+    int val = _baseBody.bmsStats[statName] ?? 0;
     val += customStats[statName] ?? 0;
     for (var k in _activeKits) {
       val += k.bmsStatsBonus[statName] ?? 0;
@@ -200,24 +189,7 @@ class Creature {
   }
 
   int getDefense(String name) {
-    int val = 0;
-    switch (name) {
-      case 'physical':
-        val = _baseBody.physicalDefense;
-        break;
-      case 'energy':
-        val = _baseBody.energyDefense;
-        break;
-      case 'heat':
-        val = _baseBody.heatDefense;
-        break;
-      case 'chill':
-        val = _baseBody.chillDefense;
-        break;
-      case 'psyche':
-        val = _baseBody.psycheDefense;
-        break;
-    }
+    int val = _baseBody.defenses[name] ?? 0;
     val += customStats['${name}Defense'] ?? 0;
     for (var k in _activeKits) {
       val += k.defenseBonus[name] ?? 0;
@@ -229,45 +201,7 @@ class Creature {
   }
 
   int getSubtrait(String name) {
-    int val = 0;
-    switch (name) {
-      case 'speed':
-        val = _baseBody.speed;
-        break;
-      case 'dexterity':
-        val = _baseBody.dexterity;
-        break;
-      case 'power':
-        val = _baseBody.power;
-        break;
-      case 'fortitude':
-        val = _baseBody.fortitude;
-        break;
-      case 'engineering':
-        val = _baseBody.engineering;
-        break;
-      case 'memory':
-        val = _baseBody.memory;
-        break;
-      case 'resolve':
-        val = _baseBody.resolve;
-        break;
-      case 'awareness':
-        val = _baseBody.awareness;
-        break;
-      case 'portrayal':
-        val = _baseBody.portrayal;
-        break;
-      case 'stunt':
-        val = _baseBody.stunt;
-        break;
-      case 'appeal':
-        val = _baseBody.appeal;
-        break;
-      case 'language':
-        val = _baseBody.language;
-        break;
-    }
+    int val = _baseBody.subtraits[name] ?? 1;
     val += customStats[name] ?? 0;
     for (var k in _activeKits) {
       val += k.subtraitBonus[name] ?? 0;
@@ -298,12 +232,7 @@ class Creature {
       bonus += c.ratingsBonus[name] ?? 0;
     }
 
-    String baseRating = '';
-    if (name == 'block') {
-      baseRating = _baseBody.blockRating;
-    } else if (name == 'dodge') {
-      baseRating = _baseBody.dodgeRating;
-    }
+    String baseRating = _baseBody.ratings[name] ?? (name == 'dodge' ? '1d12' : '1d4');
 
     return _addDice(baseRating, bonus);
   }

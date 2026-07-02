@@ -604,6 +604,25 @@ class CreatureDetailScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildComponentsSection(Creature creature) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        _sectionHeader('Traits & Subtraits'),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            //GOOOOOOOOOOOOOOOOOOOOOIDA
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _componentsColumn() {}
 }
 
 class _KitDisplay {
